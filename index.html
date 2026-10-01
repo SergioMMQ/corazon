@@ -3,69 +3,504 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>corazonlatiendo</title>
-</head>
-<body>
+    <title>Te Amo, Gaby</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Lato:wght@300&display=swap" rel="stylesheet">
     <style>
-        body{
-            margin: 0;
-            padding: 0;
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --r1: #ff8fa3;
+            --r2: #e8192c;
+            --r3: #6b0010;
+            --beat: 1.5s;
+        }
+
+        html, body { width: 100%; height: 100%; }
+
+        body {
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            overflow: hidden;
+            font-family: 'Lato', sans-serif;
+            cursor: default;
+        }
+
+        /* ════════════════════════════
+           LAYERS DE FONDO
+        ════════════════════════════ */
+
+        #stars-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+        }
+
+        .aurora {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse 70% 50% at 20% 70%, rgba(100,0,20,.45) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 60% at 80% 30%, rgba(70,0,25,.35) 0%, transparent 70%),
+                radial-gradient(ellipse 90% 50% at 50% 100%, rgba(50,0,15,.5) 0%, transparent 55%);
+            animation: aurora-breathe 18s ease-in-out infinite alternate;
+        }
+
+        @keyframes aurora-breathe {
+            from { opacity: .6; transform: scale(1); }
+            to   { opacity: 1;  transform: scale(1.06); }
+        }
+
+
+        /* viñeta */
+        .vignette {
+            position: fixed;
+            inset: 0;
+            z-index: 5;
+            pointer-events: none;
+            background: radial-gradient(ellipse at center, transparent 38%, rgba(0,0,0,.75) 100%);
+        }
+
+        /* ════════════════════════════
+           CORAZONES FLOTANTES
+        ════════════════════════════ */
+
+        #float-layer {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .fheart {
+            position: absolute;
+            opacity: 0;
+            animation: rise var(--dur) ease-in var(--delay) infinite;
+        }
+
+        @keyframes rise {
+            0%   { transform: translateY(0)     rotate(var(--rot)) scale(0);   opacity: 0; }
+            8%   { transform: translateY(-3vh)  rotate(var(--rot)) scale(1);   opacity: var(--op); }
+            85%  { opacity: calc(var(--op) * .2); }
+            100% { transform: translateY(-60vh) rotate(calc(var(--rot) + 20deg)) scale(.4); opacity: 0; }
+        }
+
+        /* ════════════════════════════
+           ESCENA PRINCIPAL
+        ════════════════════════════ */
+
+        .scene {
+            position: relative;
+            z-index: 6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 44px;
+            animation: scene-in 2.2s cubic-bezier(.215,.61,.355,1) both;
+        }
+
+        @keyframes scene-in {
+            from { opacity: 0; transform: scale(.8) translateY(20px); }
+            to   { opacity: 1; transform: scale(1)  translateY(0); }
+        }
+
+        /* ════════════════════════════
+           CORAZÓN PRINCIPAL
+        ════════════════════════════ */
+
+        .heart-area {
+            position: relative;
+            width: 210px;
+            height: 210px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: black;
         }
-        .heart{
-            height: 150px;
-            width: 150px;
-            background-color: red;
+
+        /* Anillos expansivos */
+        .ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255,77,109,.5);
+            animation: ring-out var(--beat) ease-out infinite;
+            opacity: 0;
+        }
+        .ring:nth-child(1) { animation-delay: 0s; }
+        .ring:nth-child(2) { animation-delay: .15s; }
+        .ring:nth-child(3) { animation-delay: .30s; }
+
+        @keyframes ring-out {
+            0%   { transform: scale(.55); opacity: .9; }
+            100% { transform: scale(1.7);  opacity: 0; }
+        }
+
+        /* SVG del corazón */
+        .heart-svg {
             position: relative;
-            transform: rotate(45deg);
-            box-shadow: -20px 20px 150px red;
-            animation: palpitar 0.5s linear infinite alternate;
+            z-index: 1;
+            animation: beat var(--beat) cubic-bezier(.25,.46,.45,.94) infinite;
+            filter:
+                drop-shadow(0 0 18px rgba(232,25,44,.95))
+                drop-shadow(0 0 55px rgba(232,25,44,.55))
+                drop-shadow(0 0 110px rgba(140,0,20,.35));
         }
-        .heart::before{
-            content: "";
-            position: absolute;
-            height: 150px;
-            width: 150px;
-            background: red;
-            right: 50%;
-            border-radius: 50%;
-            box-shadow: 20px 20px 150px red;
+
+        @keyframes beat {
+            0%   { transform: scale(1); }
+            14%  { transform: scale(1.22); }
+            28%  { transform: scale(1.04); }
+            42%  { transform: scale(1.16); }
+            68%  { transform: scale(1); }
+            100% { transform: scale(1); }
         }
-        .contenido{
+
+        /* ════════════════════════════
+           TEXTO
+        ════════════════════════════ */
+
+        .mensaje { text-align: center; }
+
+        .te-amo {
+            font-family: 'Dancing Script', cursive;
+            font-size: clamp(3.2rem, 9.5vw, 5.8rem);
+            font-weight: 700;
+            background: linear-gradient(120deg, #ffb3c1 0%, #ff4d6d 35%, #e8192c 55%, #ff8fa3 80%, #ffb3c1 100%);
+            background-size: 220% 220%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 28px rgba(255,77,109,.65));
+            animation: shimmer 6s ease infinite;
+            line-height: 1;
+        }
+
+        @keyframes shimmer {
+            0%   { background-position: 0%   50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0%   50%; }
+        }
+
+
+        .nombre {
+            font-family: 'Dancing Script', cursive;
+            font-size: clamp(1.9rem, 5vw, 2.9rem);
+            font-weight: 600;
+            color: rgba(255,205,215,.9);
+            margin-top: 6px;
+            letter-spacing: 6px;
+            animation: fade-up 2s ease both .4s;
+        }
+
+        .divider {
+            width: 90px;
+            height: 1px;
+            margin: 14px auto 0;
+            background: linear-gradient(90deg, transparent, rgba(255,77,109,.65), transparent);
+            animation: fade-up 2s ease both .6s;
+        }
+
+        .subtexto {
+            margin-top: 12px;
+            font-size: .72rem;
+            font-weight: 300;
+            color: rgba(255,130,150,.45);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            animation: fade-up 2s ease both .8s;
+        }
+
+        @keyframes fade-up {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ════════════════════════════
+           LÍNEA ECG
+        ════════════════════════════ */
+
+        .ecg-wrap {
             position: fixed;
-            margin-bottom: 50px;
-            text-align: center;
+            bottom: 28px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            z-index: 6;
+            pointer-events: none;
+            opacity: .55;
         }
-        h1{
-            color: white;
+
+        #ecg-svg {
+            width: min(520px, 92vw);
+            height: 50px;
+            overflow: visible;
         }
-        h2{
-            color: white;
+
+        #ecg-line {
+            fill: none;
+            stroke: #ff4d6d;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
-        @keyframes palpitar {
-            0%{transform: rotate(45deg) scale(1.10);}
-            80%{transform: rotate(45deg) scale(1.0);}
-            100%{transform: rotate(45deg) scale(0.8);}
-            
+
+        #ecg-glow {
+            fill: none;
+            stroke: #ff4d6d;
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: blur(3px);
+            opacity: .5;
         }
-        .heart::after{
-            content: "";
-            position: absolute;
-            height: 150px;
-            width: 150px;
-            background: red;
-            top: -50%;
-            border-radius: 50%;
-            box-shadow: 20px 20px 150px red;
+
+        #ecg-dot {
+            fill: #ff8fa3;
+            filter: drop-shadow(0 0 4px #ff4d6d);
+        }
+
+        /* ════════════════════════════
+           BURST AL HACER CLIC
+        ════════════════════════════ */
+
+        .bheart {
+            position: fixed;
+            pointer-events: none;
+            z-index: 20;
+            font-size: 14px;
+            animation: burst .75s ease-out forwards;
+        }
+
+        @keyframes burst {
+            0%   { transform: translate(-50%,-50%) scale(0) rotate(0); opacity: 1; }
+            100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1) rotate(var(--r)); opacity: 0; }
         }
     </style>
-    <body>
-        <div class="heart"></div>
-        <div class="contenido"><h1>TE AMO</h1><h2>Gaby</h2></div>
-    </body>
+</head>
+<body>
+
+    <!-- Fondos -->
+    <canvas id="stars-canvas"></canvas>
+    <div class="aurora"></div>
+    <div id="float-layer"></div>
+    <div class="vignette"></div>
+
+    <!-- Escena central -->
+    <div class="scene">
+
+        <div class="heart-area">
+            <div class="ring"></div>
+            <div class="ring"></div>
+            <div class="ring"></div>
+
+            <svg class="heart-svg" viewBox="0 0 100 92" width="170" height="156" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <!-- Gradiente principal -->
+                    <radialGradient id="hg" cx="50%" cy="38%" r="62%">
+                        <stop offset="0%"   stop-color="#ff9db5"/>
+                        <stop offset="38%"  stop-color="#e8192c"/>
+                        <stop offset="100%" stop-color="#5a000d"/>
+                    </radialGradient>
+                    <!-- Brillo interior -->
+                    <radialGradient id="shine" cx="36%" cy="28%" r="38%">
+                        <stop offset="0%"   stop-color="rgba(255,255,255,.28)"/>
+                        <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+                    </radialGradient>
+                    <!-- Resplandor suave borde -->
+                    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur in="SourceAlpha" stdDeviation="2.5" result="b"/>
+                        <feFlood flood-color="#ff4d6d" flood-opacity=".6" result="c"/>
+                        <feComposite in="c" in2="b" operator="in" result="glow"/>
+                        <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Cuerpo del corazón -->
+                <path d="M50 87 C48 85 4 56 4 27 C4 12 16 4 28 4 C36 4 44 8 50 16 C56 8 64 4 72 4 C84 4 96 12 96 27 C96 56 52 85 50 87Z"
+                      fill="url(#hg)" filter="url(#soft)"/>
+                <!-- Capa de brillo -->
+                <path d="M50 87 C48 85 4 56 4 27 C4 12 16 4 28 4 C36 4 44 8 50 16 C56 8 64 4 72 4 C84 4 96 12 96 27 C96 56 52 85 50 87Z"
+                      fill="url(#shine)"/>
+            </svg>
+        </div>
+
+        <div class="mensaje">
+            <h1 class="te-amo">Te Amo</h1>
+            <h2 class="nombre">Gaby</h2>
+            <div class="divider"></div>
+            <p class="subtexto">siempre &amp; para siempre</p>
+        </div>
+    </div>
+
+    <!-- ECG -->
+    <div class="ecg-wrap">
+        <svg id="ecg-svg" viewBox="0 0 520 50" preserveAspectRatio="xMidYMid meet">
+            <path id="ecg-glow" d="M0,25 L55,25 L68,25 L76,4 L88,46 L100,8 L112,25 L135,25
+                                    M140,25 L195,25 L208,25 L216,4 L228,46 L240,8 L252,25 L275,25
+                                    M280,25 L335,25 L348,25 L356,4 L368,46 L380,8 L392,25 L415,25
+                                    L520,25"/>
+            <path id="ecg-line" d="M0,25 L55,25 L68,25 L76,4 L88,46 L100,8 L112,25 L135,25
+                                    M140,25 L195,25 L208,25 L216,4 L228,46 L240,8 L252,25 L275,25
+                                    M280,25 L335,25 L348,25 L356,4 L368,46 L380,8 L392,25 L415,25
+                                    L520,25"/>
+            <circle id="ecg-dot" r="3.5" cx="0" cy="25"/>
+        </svg>
+    </div>
+
+    <script>
+    // ═══════════════════════════════════════
+    //  ESTRELLAS (canvas)
+    // ═══════════════════════════════════════
+    const cvs = document.getElementById('stars-canvas');
+    const ctx = cvs.getContext('2d');
+    let stars = [];
+
+    function resize() {
+        cvs.width  = window.innerWidth;
+        cvs.height = window.innerHeight;
+    }
+
+    function mkStars() {
+        stars = Array.from({ length: 130 }, () => ({
+            x: Math.random() * cvs.width,
+            y: Math.random() * cvs.height,
+            r: Math.random() * 1.4 + .3,
+            a: Math.random(),
+            sp: Math.random() * .008 + .002,
+            d: Math.random() < .5 ? 1 : -1,
+        }));
+    }
+
+    function drawStars() {
+        ctx.clearRect(0, 0, cvs.width, cvs.height);
+        for (const s of stars) {
+            s.a += s.sp * s.d;
+            if (s.a >= 1 || s.a <= 0) s.d *= -1;
+            const v = Math.floor(150 + s.a * 105);
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${v},${Math.floor(v*.65)},${Math.floor(v*.7)},${s.a})`;
+            ctx.fill();
+        }
+        requestAnimationFrame(drawStars);
+    }
+
+    resize(); mkStars(); drawStars();
+    window.addEventListener('resize', () => { resize(); mkStars(); });
+
+    // ═══════════════════════════════════════
+    //  CORAZONES FLOTANTES
+    // ═══════════════════════════════════════
+    const floatLayer = document.getElementById('float-layer');
+    const HPath = "M0,18 C0,18 -11,10 -11,5 C-11,1 -8,-2 -5,-2 C-3,-2 -1.5,-.5 0,1.5 C1.5,-.5 3,-2 5,-2 C8,-2 11,1 11,5 C11,10 0,18 0,18Z";
+
+    function spawnFloat() {
+        const ns = 'http://www.w3.org/2000/svg';
+        const s = document.createElementNS(ns, 'svg');
+        const sz = 7 + Math.random() * 16;
+        s.setAttribute('viewBox', '-13 -4 26 24');
+        s.setAttribute('width',  sz);
+        s.setAttribute('height', sz * .92);
+        s.classList.add('fheart');
+
+        const p = document.createElementNS(ns, 'path');
+        p.setAttribute('d', HPath);
+        p.setAttribute('fill', `hsl(${338 + Math.random()*22}deg,88%,${55 + Math.random()*22}%)`);
+        s.appendChild(p);
+
+        const dur  = 10 + Math.random() * 12;
+        const del  = Math.random() * 6;
+        const op   = .25 + Math.random() * .55;
+        const rot  = -25 + Math.random() * 50;
+        s.style.cssText = `
+            left: ${8 + Math.random()*84}%;
+            top:  ${58 + Math.random()*38}%;
+            --dur:${dur}s; --delay:${del}s;
+            --op:${op}; --rot:${rot}deg;`;
+        floatLayer.appendChild(s);
+        setTimeout(() => s.remove(), (dur + del + .5) * 1000);
+    }
+
+    for (let i = 0; i < 8; i++) setTimeout(spawnFloat, i * 350);
+    setInterval(spawnFloat, 900);
+
+    // ═══════════════════════════════════════
+    //  ECG animado
+    // ═══════════════════════════════════════
+    const ecgLine = document.getElementById('ecg-line');
+    const ecgGlow = document.getElementById('ecg-glow');
+    const ecgDot  = document.getElementById('ecg-dot');
+    const CYCLE   = 3200; // ms por ciclo
+
+    window.addEventListener('load', () => {
+        const len = ecgLine.getTotalLength();
+
+        [ecgLine, ecgGlow].forEach(el => {
+            el.style.strokeDasharray  = len;
+            el.style.strokeDashoffset = len;
+            el.style.transition = 'none';
+        });
+
+        let t0 = null;
+        function step(ts) {
+            if (!t0) t0 = ts;
+            const frac = ((ts - t0) % CYCLE) / CYCLE;
+
+            // Dibujar progresivo con fade al final del ciclo
+            const drawFrac = Math.min(frac / .65, 1);
+            const off = len * (1 - drawFrac);
+            const op  = frac > .8 ? 1 - (frac - .8) / .2 : 1;
+
+            [ecgLine, ecgGlow].forEach(el => {
+                el.style.strokeDashoffset = off;
+                el.style.opacity = op;
+            });
+
+            // Punto que recorre el trazo
+            const pt = ecgLine.getPointAtLength(frac * len);
+            ecgDot.setAttribute('cx', pt.x);
+            ecgDot.setAttribute('cy', pt.y);
+            ecgDot.style.opacity = op;
+
+            requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+    });
+
+    // ═══════════════════════════════════════
+    //  CLICK BURST
+    // ═══════════════════════════════════════
+    function burst(x, y) {
+        for (let i = 0; i < 9; i++) {
+            const el  = document.createElement('div');
+            el.classList.add('bheart');
+            const ang  = (i / 9) * Math.PI * 2;
+            const dist = 38 + Math.random() * 65;
+            el.style.cssText = `
+                left:${x}px; top:${y}px;
+                --dx:${Math.cos(ang)*dist}px;
+                --dy:${Math.sin(ang)*dist}px;
+                --r:${-35 + Math.random()*70}deg;
+                font-size:${9 + Math.random()*13}px;
+                color:hsl(${340+Math.random()*25}deg,90%,65%);`;
+            el.textContent = '♥';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 760);
+        }
+    }
+
+    document.addEventListener('click',      e => burst(e.clientX, e.clientY));
+    document.addEventListener('touchstart', e => {
+        const t = e.touches[0];
+        burst(t.clientX, t.clientY);
+    }, { passive: true });
+    </script>
 </body>
 </html>
